@@ -199,6 +199,32 @@
       }
     </script>
 
+    // 🧭 Atualizar legenda
+        const legend = document.getElementById("legend");
+        legend.innerHTML = `
+          <b>Map Legend</b><br>
+          <div class="legend-item">
+            <div class="legend-symbol" style="background:#708090;opacity:0.25;"></div>
+            15 km coverage areas (High-income & investment FSAs)
+          </div>
+          <div class="legend-item">
+            <div class="legend-symbol" style="border:1px solid #000;background:none;"></div>
+            40 km radius – Toronto & Collingwood
+          </div>
+          <div class="legend-item">
+            <div class="legend-symbol" style="background:#FF0000;"></div>
+            Corridor zone (15 km buffer around Highways 400 & 10)
+          </div>
+          <div class="legend-item">
+            <span style="color:#000;">&#8212;&#8212;&#8212;</span> Highways 400 & 10 (Dashed)
+          </div>
+        `;
+
+        map.controls[google.maps.ControlPosition.LEFT_BOTTOM].push(legend);
+      }
+    </script>
+
+
     <!-- 🔑 Sua chave do Google Maps -->
     <script async
       src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCpc7QvLyEbejJL1bwaV--hsQHS1gFFoWg&callback=initMap">
