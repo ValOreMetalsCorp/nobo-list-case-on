@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>High-Income / High-Investment FSAs – Ontario</title>
+  <style>
+    html, body { height: 100%; margin: 0; padding: 0; }
+    #map { height: 100%; width: 100%; }
+
+    /* 🔹 Botão de retorno */
+    #back-button {
+      position: absolute;
+      top: 15px;
+      left: 210px;
+      background-color: white;
+      padding: 8px 14px;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+      color: #17193b;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 13px;
+      z-index: 10;
+      transition: all 0.2s ease-in-out;
+    }
+    #back-button:hover { background-color: #f2f2f2; transform: translateY(-1px); }
+
+    /* 🔹 Título flutuante */
+    h3 {
+      position: absolute;
+      top: 60px;
+      left: 15px;
+      background: rgba(255,255,255,0.9);
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 16px;
+      color: #17193b;
+      z-index: 9;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.25);
+      margin: 0;
+      font-weight: 600;
+    }
+
+    /* 🔹 Legenda */
+    #legend {
+      position: absolute;
+      bottom: 20px;
+      left: 20px;
+      background: white;
+      padding: 10px 14px;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- 🔹 Botão de retorno -->
+  <a href="index.html" id="back-button">⬅ Back to Dashboard</a>
+
+  <!-- 🔹 Título -->
+  <h3>High-Income / High-Investment FSAs – Ontario</h3>
+
+  <!-- 🔹 Mapa -->
+  <div id="map"></div>
+  <div id="legend"></div>
+
+  <!-- 🔹 Configuração -->
+  <script src="config.js"></script>
+  <script src="scripts/high_income_fsa_layer.js"></script>
+
+  <!-- 🔑 Google Maps API -->
+  <script>
+    const script = document.createElement("script");
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${CONFIG.GOOGLE_MAPS_API_KEY}&callback=initMap`;
+    script.async = true;
+    script.defer = true;
+    document.head.appendChild(script);
+  </script>
+</body>
+</html>
