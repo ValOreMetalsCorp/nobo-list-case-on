@@ -18,11 +18,27 @@
         bottom: 20px;
         left: 20px;
         background: white;
-        padding: 10px 14px;
-        border-radius: 8px;
+        padding: 12px 16px;
+        border-radius: 10px;
         box-shadow: 0 2px 6px rgba(0,0,0,0.3);
         font-size: 14px;
         line-height: 1.5;
+      }
+      .legend-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 4px;
+      }
+      .legend-symbol {
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        margin-right: 6px;
+      }
+      hr {
+        border: none;
+        border-top: 1px solid #ddd;
+        margin: 6px 0;
       }
     </style>
   </head>
@@ -43,10 +59,8 @@
         const response = await fetch("ontario_socioeconomic_clusters_geo.json");
         const data = await response.json();
 
-        // 🎯 Filtrar somente Cluster 1
+        // 🔹 Filtrar e desenhar círculos cinza (15 km)
         const filtered = data.filter(d => d.socioeconomic_cluster === 1);
-
-        // 🔵 Criar círculos de 15 km, mais transparentes
         filtered.forEach(d => {
           const lat = parseFloat(d.lat);
           const lon = parseFloat(d.lon);
@@ -65,7 +79,6 @@
             const info = new google.maps.InfoWindow({
               content: `
                 <b>FSA:</b> ${fsa}<br>
-                <b>Cluster:</b> 1 – High-Income / High-Investment<br>
                 <b>Coverage radius:</b> ≈15 km
               `
             });
@@ -74,74 +87,41 @@
           }
         });
 
-        // 🧭 Legenda principal
-        const legend = document.getElementById("legend");
-        legend.innerHTML = `
-          <b>Priority FSAs</b><br>
-          <div style="display:flex;align-items:center;">
-            <div style="width:14px;height:14px;border-radius:50%;background:#708090;margin-right:6px;opacity:0.25;"></div>
-            Cluster 1 – High-Income / High-Investment (15 km radius)
-          </div>
-        `;
-
-        // ➕ Legenda expandida
-        legend.innerHTML += `
-          <hr>
-          <div><span style="color:#FF0000;">&#8212;&#8212;&#8212;</span> Corridor (15 km buffer around Highways 400 & 10)</div>
-          <div><span style="color:#000;">&#8212;&#8212;&#8212;</span> Highways 400 & 10 (Dashed)</div>
-          <div><span style="color:#0066FF;">⬤</span> Toronto 40 km radius</div>
-          <div><span style="color:#FF9900;">⬤</span> Collingwood 40 km radius</div>
-          <div><span style="color:#008000;">⬤</span> High-Income & Investor Concentration Area</div>
-        `;
-
-        map.controls[google.maps.ControlPosition.LEFT_BOTTOM].push(legend);
-
-        // 📍 Reference points
+        // 🏛️ City reference points
         const collingwood = { lat: 44.5008, lng: -80.2144 };
         const toronto = { lat: 43.6532, lng: -79.3832 };
 
-        // 🏛️ City markers
-        new google.maps.Marker({
-          position: collingwood,
-          map,
-          icon: {
-            url: "http://maps.google.com/mapfiles/kml/shapes/capital_small.png",
-            scaledSize: new google.maps.Size(36, 36)
-          },
-          title: "Collingwood City Hall"
+        // 🏙️ City markers
+        [
+          { city: collingwood, label: "Collingwood City Hall" },
+          { city: toronto, label: "Toronto City Hall" }
+        ].forEach(obj => {
+          new google.maps.Marker({
+            position: obj.city,
+            map,
+            icon: {
+              url: "http://maps.google.com/mapfiles/kml/shapes/capital_small.png",
+              scaledSize: new google.maps.Size(36, 36)
+            },
+            title: obj.label
+          });
         });
 
-        new google.maps.Marker({
-          position: toronto,
-          map,
-          icon: {
-            url: "http://maps.google.com/mapfiles/kml/shapes/capital_small.png",
-            scaledSize: new google.maps.Size(36, 36)
-          },
-          title: "Toronto City Hall"
-        });
-
-        // 🔸 City circles (40 km)
-        new google.maps.Circle({
-          strokeColor: "#000000",
-          strokeOpacity: 0.7,
-          strokeWeight: 1,
-          fillColor: "#000000",
-          fillOpacity: 0.00,
-          map,
-          center: toronto,
-          radius: 40000
-        });
-
-        new google.maps.Circle({
-          strokeColor: "#000000",
-          strokeOpacity: 0.7,
-          strokeWeight: 1,
-          fillColor: "#000000",
-          fillOpacity: 0.00,
-          map,
-          center: collingwood,
-          radius: 40000
+        // ⚫ Circles around both cities (40 km, black outline only)
+        [
+          { city: toronto, label: "Toronto 40 km radius" },
+          { city: collingwood, label: "Collingwood 40 km radius" }
+        ].forEach(obj => {
+          new google.maps.Circle({
+            strokeColor: "#000000",
+            strokeOpacity: 0.8,
+            strokeWeight: 1,
+            fillColor: "#000000",
+            fillOpacity: 0.0,
+            map,
+            center: obj.city,
+            radius: 40000
+          });
         });
 
         // 🛣️ Highways (dashed black)
@@ -176,7 +156,7 @@
           });
         });
 
-        // 🔺 Corridor polygon (15 km buffer)
+        // 🔺 Corridor polygon (filled red)
         const corridor = [
           { lat: 44.62, lng: -80.35 },
           { lat: 44.48, lng: -79.58 },
@@ -191,17 +171,49 @@
         new google.maps.Polygon({
           paths: corridor,
           strokeColor: "#FF0000",
-          strokeOpacity: 0.8,
+          strokeOpacity: 0.9,
           strokeWeight: 1,
-          fillOpacity: 0,
+          fillColor: "#FF0000",
+          fillOpacity: 0.25,
           map
         });
+
+        // 🧭 Legenda detalhada
+        const legend = document.getElementById("legend");
+        legend.innerHTML = `
+          <b>Map Legend</b><br>
+          <div class="legend-item">
+            <div class="legend-symbol" style="background:#708090;opacity:0.25;"></div>
+            ≈15 km FSA coverage areas (High-income / investment concentration)
+          </div>
+          <div class="legend-item">
+            <div class="legend-symbol" style="border:1px solid #000;background:none;"></div>
+            40 km radius – <b>Toronto area</b>
+          </div>
+          <div class="legend-item">
+            <div class="legend-symbol" style="border:1px solid #000;background:none;"></div>
+            40 km radius – <b>Collingwood area</b>
+          </div>
+          <div class="legend-item">
+            <div class="legend-symbol" style="background:#FF0000;"></div>
+            Corridor zone (≈15 km buffer around Highways 400 & 10)
+          </div>
+          <div class="legend-item">
+            <span style="color:#000;">&#8212;&#8212;&#8212;</span>&nbsp;Highways 400 & 10 (Dashed)
+          </div>
+        `;
+
+        map.controls[google.maps.ControlPosition.LEFT_BOTTOM].push(legend);
       }
     </script>
 
-    <!-- 🔑 Sua chave do Google Maps -->
+    <!-- 🔑 Google Maps API -->
+    </script>
+
+    <!-- 🔑 Carregar chave do Google Maps a partir do config.js -->
+    <script src="config.js"></script>
     <script async
-      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCpc7QvLyEbejJL1bwaV--hsQHS1gFFoWg&callback=initMap">
+      src="https://maps.googleapis.com/maps/api/js?key=" + GOOGLE_MAPS_API_KEY + "&callback=initMap">
     </script>
   </body>
 </html>
