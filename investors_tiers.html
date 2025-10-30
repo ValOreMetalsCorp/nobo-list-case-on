@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>ValOre – NOBO Investors by Tier</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    #map {
+      height: 90vh;
+      width: 100%;
+    }
+
+    /* 🔹 Botão de retorno */
+    #back-button {
+      position: absolute;
+      top: 15px;
+      left: 210px;
+      background-color: white;
+      padding: 8px 14px;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+      color: #17193b;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 13px;
+      z-index: 10;
+      transition: all 0.2s ease-in-out;
+    }
+
+    #back-button:hover {
+      background-color: #f2f2f2;
+      transform: translateY(-1px);
+    }
+
+    /* 🔹 Título flutuante */
+    h3 {
+      position: absolute;
+      top: 60px;
+      left: 15px;
+      background: rgba(255,255,255,0.9);
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 16px;
+      color: #17193b;
+      z-index: 9;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.25);
+      margin: 0;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+    }
+
+    /* 🔹 Caixa de filtro */
+    #filter-box {
+      position: absolute;
+      top: 125px;
+      left: 10px;
+      background: white;
+      padding: 12px 16px;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      font-size: 14px;
+      z-index: 5;
+      line-height: 1.6;
+    }
+
+    #filter-box b {
+      display: block;
+      margin-bottom: 4px;
+      color: #17193b;
+    }
+
+    /* 🔹 Legenda */
+    .legend {
+      background: white;
+      padding: 10px;
+      margin: 10px;
+      font-size: 14px;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+      line-height: 20px;
+    }
+
+    .legend img {
+      vertical-align: middle;
+      margin-right: 6px;
+    }
+
+    /* 🔹 Contador */
+    #counter {
+      margin-top: 8px;
+      font-weight: bold;
+      text-align: center;
+      color: #17193b;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- 🔹 Botão de retorno -->
+  <a href="index.html" id="back-button">⬅ Back to Dashboard</a>
+
+  <!-- 🔹 Título -->
+  <h3>Geographic Distribution of ValOre NOBO List Investors by Tier – Canada</h3>
+
+  <!-- 🔹 Mapa -->
+  <div id="map"></div>
+
+  <!-- 🔹 Scripts -->
+  <script src="scripts/config.js"></script>
+  <script src="scripts/investors_tier_layer.js"></script>
+
+  <script>
+    async function initMap() {
+      const map = new google.maps.Map(document.getElementById("map"), {
+        zoom: 4,
+        center: { lat: 56, lng: -96 },
+      });
+
+      await addInvestorsTierLayer(map);
+      addBackButton();
+
+      console.log("✅ Investor Tier Map loaded successfully.");
+    }
+
+    // 🔑 Chave segura via config.js
+    const script = document.createElement("script");
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${CONFIG.GOOGLE_MAPS_API_KEY}&callback=initMap`;
+    script.async = true;
+    script.defer = true;
+    document.head.appendChild(script);
+  </script>
+</body>
+</html>

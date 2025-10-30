@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Socioeconomic Clusters – Ontario (Total Income)</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    #map {
+      height: 90vh;
+      width: 100%;
+    }
+
+    #back-button {
+      position: absolute;
+      top: 15px;
+      left: 210px;
+      background-color: white;
+      padding: 8px 14px;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+      color: #17193b;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 13px;
+      z-index: 10;
+    }
+
+    #back-button:hover {
+      background-color: #f2f2f2;
+    }
+
+    h3 {
+      position: absolute;
+      top: 60px;
+      left: 15px;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-size: 16px;
+      color: #17193b;
+      z-index: 9;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+      margin: 0;
+    }
+
+    .legend {
+      background: rgba(255, 255, 255, 0.9);
+      padding: 8px 12px;
+      font-size: 12.5px;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+      position: absolute;
+      bottom: 25px;
+      left: 15px;
+      z-index: 5;
+      line-height: 1.4;
+      width: 180px;
+    }
+
+    .legend b {
+      display: block;
+      margin-bottom: 3px;
+      color: #17193b;
+      font-size: 13px;
+    }
+
+    #area-counter {
+      position: absolute;
+      bottom: 30px;
+      right: 25px;
+      background: white;
+      padding: 12px 16px;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+      font-size: 13px;
+      line-height: 1.5;
+      color: #17193b;
+      z-index: 6;
+      width: 220px;
+    }
+
+    #area-counter b {
+      display: block;
+      font-size: 14px;
+      margin-bottom: 4px;
+    }
+  </style>
+</head>
+
+<body>
+  <a href="index.html" id="back-button">⬅ Back to Dashboard</a>
+  <h3>Socioeconomic Clusters – Ontario (Total Income)</h3>
+  <div id="map"></div>
+  <div id="legend" class="legend"><b>Legend</b></div>
+  <div id="area-counter">
+    <b>Area Counters</b>
+    <div>Toronto 40 km: <span id="count-toronto">0</span></div>
+    <div>Collingwood 40 km: <span id="count-collingwood">0</span></div>
+    <div>Corridor (15 km): <span id="count-corridor">0</span></div>
+    <hr>
+    <div><b>Total visible:</b> <span id="count-total">0</span></div>
+  </div>
+
+  <script>
+    async function initMap() {
+      const map = new google.maps.Map(document.getElementById("map"), {
+        zoom: 7,
+        center: { lat: 44.1, lng: -79.6 },
+      });
+
+      const collingwood = { lat: 44.5008, lng: -80.2144 };
+      const toronto = { lat: 43.6532, lng: -79.3832 };
+
+      // City markers
+      [collingwood, toronto].forEach((city, i) => {
+        new google.maps.Marker({
+          position: city,
+          map,
+          icon: {
+            url: "http://maps.google.com/mapfiles/kml/shapes/capital_small.png",
+            scaledSize: new google.maps.Size(34, 34),
+          },
+          title: i === 0 ? "Collingwood City Hall" : "Toronto City Hall",
+        });
+      });
+
+      // Circles
+      new google.maps.Circle({
+        strokeColor: "#0066FF",
+        strokeOpacity: 0.7,
+        strokeWeight: 2,
+        fillColor: "#0066FF",
+        fillOpacity: 0.08,
+        map,
+        center: toronto,
+        radius: 40000,
+      });
+
+      new google.maps.Circle({
+        strokeColor: "#FF9900",
+        strokeOpacity: 0.7,
+        strokeWeight: 2,
+        fillColor: "#FF9900",
+        fillOpacity: 0.08,
+        map,
+        center: collingwood,
+        radius: 40000,
+      });
+
+      // Corridor polygon
+      const corridor = [
+        { lat: 44.62, lng: -80.35 },
+        { lat: 44.48, lng: -79.58 },
+        { lat: 44.05, lng: -79.3 },
+        { lat: 43.6, lng: -79.35 },
+        { lat: 43.55, lng: -79.85 },
+        { lat: 43.85, lng: -80.15 },
+        { lat: 44.35, lng: -80.25 },
+        { lat: 44.62, lng: -80.35 },
+      ];
+
+      new google.maps.Polygon({
+        paths: corridor,
+        strokeColor: "#FF0000",
+        strokeOpacity: 0.9,
+        strokeWeight: 3,
+        fillOpacity: 0,
+        map,
+      });
+
+      // Load socioeconomic data
+      const response = await fetch("data/ontario_socioeconomic_clusters_geo.json");
+      const data = await response.json();
+
+      const clusterColors = ["#3c8dbc", "#00a65a", "#f39c12", "#dd4b39", "#605ca8", "#39cccc"];
+
+      // Escala de tamanho automática
+      const incomes = data.map(d => parseFloat(d.total_income || 0));
+      const minIncome = Math.min(...incomes);
+      const maxIncome = Math.max(...incomes);
+
+      function scaleRadius(value) {
+        const minR = 2000, maxR = 20000;
+        return ((value - minIncome) / (maxIncome - minIncome)) * (maxR - minR) + minR;
+      }
+
+      const markers = data
+        .filter(d => d.lat && d.lon && !isNaN(d.lat) && !isNaN(d.lon))
+        .map((item) => {
+          const color = clusterColors[item.socioeconomic_cluster % clusterColors.length];
+          const income = parseFloat(item.total_income || 0);
+          const radius = scaleRadius(income);
+
+          const circle = new google.maps.Circle({
+            strokeColor: color,
+            strokeOpacity: 0.9,
+            strokeWeight: 1,
+            fillColor: color,
+            fillOpacity: 0.45,
+            map,
+            center: { lat: item.lat, lng: item.lon },
+            radius: radius,
+          });
+
+          const info = `
+            <b>${item.city || "Unknown City"}</b><br>
+            FSA: ${item.fsa}<br>
+            Cluster: ${item.socioeconomic_cluster}<br>
+            Total Income: ${item.total_income?.toLocaleString() || "N/A"} CAD<br>
+            Avg Age: ${item.avg_age_estimated || "N/A"}
+          `;
+
+          const infoWindow = new google.maps.InfoWindow({ content: info });
+          circle.addListener("click", () => infoWindow.open({ map, position: circle.getCenter() }));
+
+          return circle;
+        });
+
+      document.getElementById("count-total").textContent = markers.length;
+    }
+  </script>
+
+  <!-- ✅ Agora o script principal está fechado corretamente -->
+  <script src="config.js"></script>
+  <script>
+    const script = document.createElement("script");
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${CONFIG.GOOGLE_MAPS_API_KEY}&callback=initMap`;
+    script.async = true;
+    script.defer = true;
+    document.head.appendChild(script);
+  </script>
+</body>
+</html>

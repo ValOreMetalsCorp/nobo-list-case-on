@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>ValOre – NOBO Investors by Cluster</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    #map {
+      height: 90vh;
+      width: 100%;
+    }
+
+    /* 🔹 Botão de retorno */
+    #back-button {
+      position: absolute;
+      top: 15px;
+      left: 210px;
+      background-color: white;
+      padding: 8px 14px;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+      color: #17193b;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 13px;
+      z-index: 10;
+      transition: all 0.2s ease-in-out;
+    }
+
+    #back-button:hover {
+      background-color: #f2f2f2;
+      transform: translateY(-1px);
+    }
+
+    /* 🔹 Título flutuante */
+    h3 {
+      position: absolute;
+      top: 60px;
+      left: 15px;
+      background: rgba(255,255,255,0.9);
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 16px;
+      color: #17193b;
+      z-index: 9;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.25);
+      margin: 0;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- 🔹 Botão de retorno -->
+  <a href="index.html" id="back-button">⬅ Back to Dashboard</a>
+
+  <!-- 🔹 Título -->
+  <h3>NOBO Investors by Contact Cluster – Canada</h3>
+
+  <!-- 🔹 Mapa -->
+  <div id="map"></div>
+
+  <!-- 🔹 Scripts -->
+  <script src="scripts/config.js"></script>
+  <script src="scripts/investors_cluster_layer.js"></script>
+
+  <script>
+    async function initMap() {
+      const map = new google.maps.Map(document.getElementById("map"), {
+        zoom: 4,
+        center: { lat: 56, lng: -96 },
+      });
+
+      await addInvestorsClusterLayer(map);
+      addBackButton();
+
+      console.log("✅ Investors Cluster Map loaded successfully.");
+    }
+
+    // 🔑 Chave do Google Maps via config.js
+    const script = document.createElement("script");
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${CONFIG.GOOGLE_MAPS_API_KEY}&callback=initMap`;
+    script.async = true;
+    script.defer = true;
+    document.head.appendChild(script);
+  </script>
+</body>
+</html>

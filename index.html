@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ValOre NOBO List – Interactive Map Dashboard</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #ffffff;
+      color: #17193b;
+    }
+
+    /* === HEADER === */
+    header {
+      display: flex;
+      align-items: center;
+      background: linear-gradient(90deg, #001f5b 0%, #003a9b 100%);
+      color: white;
+      padding: 10px 30px;
+      height: 70px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+    }
+
+    header img {
+      height: 48px;
+      margin-right: 15px;
+    }
+
+    header h1 {
+      font-size: 20px;
+      font-weight: bold;
+      letter-spacing: 0.6px;
+      margin: 0;
+      text-transform: uppercase;
+    }
+
+    /* === MAIN CONTAINER === */
+    .container {
+      text-align: center;
+      margin-top: 80px;
+    }
+
+    .container h2 {
+      color: #001f5b;
+      font-size: 26px;
+      margin-bottom: 45px;
+      font-weight: 600;
+      letter-spacing: 0.4px;
+    }
+
+    /* === BUTTON GRID === */
+    .button-container {
+      display: flex;
+      justify-content: center;
+      gap: 25px;
+      flex-wrap: wrap;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .button-container a {
+      text-decoration: none;
+      background-color: #7B8CB2;
+      color: white;
+      padding: 14px 32px;
+      border-radius: 10px;
+      font-weight: 500;
+      font-size: 15px;
+      transition: all 0.25s ease-in-out;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+      letter-spacing: 0.3px;
+    }
+
+    .button-container a:hover {
+      background-color: #5E6F99;
+      transform: translateY(-2px);
+      box-shadow: 0 0 10px rgba(123, 140, 178, 0.5);
+    }
+
+    /* === FOOTER === */
+    footer {
+      text-align: center;
+      font-size: 12px;
+      color: #666;
+      margin-top: 70px;
+      padding: 20px 0;
+      border-top: 1px solid #eee;
+    }
+
+    footer a {
+      color: #001f5b;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- 🔹 HEADER -->
+  <header>
+    <img src="assets/logo.png" alt="ValOre Logo">
+    <h1>ValOre NOBO List</h1>
+  </header>
+
+  <!-- 🔹 MAIN CONTENT -->
+  <div class="container">
+    <h2>Interactive Map Dashboard</h2>
+
+    <div class="button-container">
+      <a href="economic_base.html">Economic Base</a>
+      <a href="investors_tier.html">Investor Tiers</a>
+      <a href="investors_clusters.html">Investor Clusters</a>
+      <a href="ontario_map.html">Ontario Focus</a>
+      <a href="alberta_map.html">Alberta</a>
+      <a href="britishcolumbia_map.html">British Columbia</a>
+    </div>
+  </div>
+
+  <!-- 🔹 FOOTER -->
+  <footer>
+    © 2025 ValOre Metals Corp — NOBO List Analytics Dashboard  
+  </footer>
+</body>
+</html>
