@@ -46,7 +46,7 @@
         // 🎯 Filtrar somente Cluster 1
         const filtered = data.filter(d => d.socioeconomic_cluster === 1);
 
-        // 🔵 Criar círculos de 15 km (transparentes)
+        // 🔵 Criar círculos de 15 km, mais transparentes
         filtered.forEach(d => {
           const lat = parseFloat(d.lat);
           const lon = parseFloat(d.lon);
@@ -65,7 +65,7 @@
             const info = new google.maps.InfoWindow({
               content: `
                 <b>FSA:</b> ${fsa}<br>
-                <b>Profile:</b> High-Income / High-Investment Area<br>
+                <b>Cluster:</b> 1 – High-Income / High-Investment<br>
                 <b>Coverage radius:</b> ≈15 km
               `
             });
@@ -80,33 +80,18 @@
           <b>Priority FSAs</b><br>
           <div style="display:flex;align-items:center;">
             <div style="width:14px;height:14px;border-radius:50%;background:#708090;margin-right:6px;opacity:0.25;"></div>
-            High-Income / High-Investment FSAs (15 km radius)
+            Cluster 1 – High-Income / High-Investment (15 km radius)
           </div>
         `;
 
         // ➕ Legenda expandida
         legend.innerHTML += `
           <hr>
-          <div>
-            <span style="color:#FF0000;">&#8212;&#8212;&#8212;</span>
-            Corridor (15 km buffer around Highways 400 & 10)
-          </div>
-          <div>
-            <span style="color:#000;">&#8212;&#8212;&#8212;</span>
-            Highways 400 & 10 (Dashed)
-          </div>
-          <div>
-            <span style="color:#0066FF;">⬤</span>
-            Toronto 40 km radius
-          </div>
-          <div>
-            <span style="color:#FF9900;">⬤</span>
-            Collingwood 40 km radius
-          </div>
-          <div>
-            <span style="color:#2E8B57;">⬤</span>
-            High-Income & Investor Concentration Area
-          </div>
+          <div><span style="color:#FF0000;">&#8212;&#8212;&#8212;</span> Corridor (15 km buffer around Highways 400 & 10)</div>
+          <div><span style="color:#000;">&#8212;&#8212;&#8212;</span> Highways 400 & 10 (Dashed)</div>
+          <div><span style="color:#0066FF;">⬤</span> Toronto 40 km radius</div>
+          <div><span style="color:#FF9900;">⬤</span> Collingwood 40 km radius</div>
+          <div><span style="color:#008000;">⬤</span> High-Income & Investor Concentration Area</div>
         `;
 
         map.controls[google.maps.ControlPosition.LEFT_BOTTOM].push(legend);
@@ -219,4 +204,3 @@
       src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCpc7QvLyEbejJL1bwaV--hsQHS1gFFoWg&callback=initMap">
     </script>
   </body>
-</html>
