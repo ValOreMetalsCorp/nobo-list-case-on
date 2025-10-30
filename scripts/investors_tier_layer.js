@@ -1,12 +1,13 @@
-// investors_tier_layer.js
 // =============================================================
-// Layer para exibir investidores no mapa base, com filtro por tier
-// e botão para retornar ao painel principal (index.html)
+// investors_tier_layer.js
+// ValOre NOBO Project – Investor Tier Visualization Layer
 // =============================================================
 
-async function addInvestorsLayer(map) {
-  // --- 1️⃣ Carregar o JSON de investidores ---
-  const response = await fetch("data/investors_map.json");
+async function addInvestorsTierLayer(map) {
+  console.log("🗺️ Loading Investor Tier Layer...");
+
+  // --- 1️⃣ Carregar base de dados ---
+  const response = await fetch("investors_map.json");
   const investors = await response.json();
 
   // --- 2️⃣ Ícones por Tier ---
@@ -19,11 +20,9 @@ async function addInvestorsLayer(map) {
   };
 
   const markersByTier = {};
-  for (const tier in tierIcons) {
-    markersByTier[tier] = [];
-  }
+  for (const tier in tierIcons) markersByTier[tier] = [];
 
-  // --- 3️⃣ Criar marcadores ---
+  // --- 3️⃣ Criar marcadores com leve offset aleatório ---
   investors.forEach(inv => {
     if (inv.lat && inv.lon) {
       const latOffset = (Math.random() - 0.5) * 0.0006;
@@ -53,13 +52,11 @@ async function addInvestorsLayer(map) {
 
       marker.addListener("click", () => info.open(map, marker));
 
-      if (markersByTier[inv.tier]) {
-        markersByTier[inv.tier].push(marker);
-      }
+      if (markersByTier[inv.tier]) markersByTier[inv.tier].push(marker);
     }
   });
 
-  // --- 4️⃣ Caixa de filtros ---
+  // --- 4️⃣ Caixa de filtro ---
   const filterBox = document.createElement("div");
   filterBox.id = "filter-box";
   filterBox.style.position = "absolute";
@@ -89,43 +86,87 @@ async function addInvestorsLayer(map) {
     "Micro – up to 1,000 shares": document.getElementById("tierMicro")
   };
 
+  // --- 5️⃣ Legenda ---
+  const legend = document.createElement("div");
+  legend.className = "legend";
+  legend.style.background = "white";
+  legend.style.padding = "10px";
+  legend.style.margin = "10px";
+  legend.style.fontSize = "14px";
+  legend.style.borderRadius = "8px";
+  legend.style.boxShadow = "0 2px 6px rgba(0,0,0,0.2)";
+  legend.innerHTML = "<b>Legend</b><br>";
+
+  for (const [tier, iconUrl] of Object.entries(tierIcons)) {
+    const div = document.createElement("div");
+    div.innerHTML = `<img src="${iconUrl}"> ${tier}`;
+    legend.appendChild(div);
+  }
+
+  // --- 6️⃣ Contador de investidores visíveis ---
+  const counterDiv = document.createElement("div");
+  counterDiv.id = "counter";
+  counterDiv.textContent = "Visible Investors: 0";
+  counterDiv.style.marginTop = "8px";
+  counterDiv.style.fontWeight = "bold";
+  counterDiv.style.textAlign = "center";
+  counterDiv.style.color = "#17193b";
+  legend.appendChild(counterDiv);
+
+  map.controls[google.maps.ControlPosition.LEFT_BOTTOM].push(legend);
+
+  // --- 7️⃣ Atualização de visibilidade e contador ---
+  function updateCounter() {
+    let visibleCount = 0;
+    for (const tier in markersByTier) {
+      markersByTier[tier].forEach(marker => {
+        if (marker.getVisible()) visibleCount++;
+      });
+    }
+    counterDiv.textContent = `Visible Investors: ${visibleCount}`;
+  }
+
   for (const [tier, checkbox] of Object.entries(checkboxes)) {
     checkbox.addEventListener("change", () => {
       const visible = checkbox.checked;
       markersByTier[tier].forEach(marker => marker.setVisible(visible));
+      updateCounter();
     });
   }
 
-  console.log("✅ Investor tier layer loaded successfully");
+  updateCounter();
+  console.log("✅ Investor Tier Layer loaded successfully.");
 }
 
 // =============================================================
-// Função global para adicionar botão de retorno
+// Função auxiliar: Botão de retorno
 // =============================================================
 function addBackButton() {
   const backButton = document.createElement("a");
   backButton.href = "index.html";
   backButton.id = "back-button";
   backButton.textContent = "⬅ Back to Dashboard";
-  backButton.style.position = "absolute";
-  backButton.style.top = "15px";
-  backButton.style.left = "210px";
-  backButton.style.backgroundColor = "white";
-  backButton.style.padding = "8px 14px";
-  backButton.style.borderRadius = "8px";
-  backButton.style.boxShadow = "0 2px 6px rgba(0,0,0,0.2)";
-  backButton.style.color = "#17193b";
-  backButton.style.textDecoration = "none";
-  backButton.style.fontWeight = "600";
-  backButton.style.fontSize = "13px";
-  backButton.style.zIndex = "10";
-  backButton.style.transition = "all 0.2s ease-in-out";
+
+  Object.assign(backButton.style, {
+    position: "absolute",
+    top: "15px",
+    left: "210px",
+    backgroundColor: "white",
+    padding: "8px 14px",
+    borderRadius: "8px",
+    boxShadow: "0 2px 6px rgba(0,0,0,0.2)",
+    color: "#17193b",
+    textDecoration: "none",
+    fontWeight: "600",
+    fontSize: "13px",
+    zIndex: "10",
+    transition: "all 0.2s ease-in-out",
+  });
 
   backButton.addEventListener("mouseover", () => {
     backButton.style.backgroundColor = "#f2f2f2";
     backButton.style.transform = "translateY(-1px)";
   });
-
   backButton.addEventListener("mouseout", () => {
     backButton.style.backgroundColor = "white";
     backButton.style.transform = "translateY(0)";
