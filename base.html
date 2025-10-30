@@ -208,16 +208,16 @@
     </script>
 
     <!-- 🔑 Google Maps API -->
-    </script>
+   </script>
 
- 
-  <!-- 🔑 Carregar chave do Google Maps a partir do config.js -->
-</html>
-    <script async
-      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCpc7QvLyEbejJL1bwaV--hsQHS1gFFoWg&callback=initMap">
+    <!-- 🔑 Carregar chave do Google Maps a partir do config.js -->
+    <script src="scripts/config.js"></script>
+    <script>
+      // Cria dinamicamente o script do Google Maps com a chave do config.js
+      const script = document.createElement("script");
+      script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}&callback=initMap`;
+      script.async = true;
+      document.head.appendChild(script);
     </script>
   </body>
-</html>
-  </script>
-</body>
 </html>
