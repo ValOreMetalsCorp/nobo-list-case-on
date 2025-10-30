@@ -1,8 +1,8 @@
-// economic_base_layer.js
+// scripts/economic_base_layer.js
 async function addEconomicBaseLayer(map) {
   console.log("🗺️ Loading Economic Base Layer...");
 
-  // 🎯 Configuração visual opcional (por exemplo, mostrar limites ou referência)
+  // 🎯 Corredor econômico aproximado (Highways 400 & 10)
   const corridorPath = [
     { lat: 44.62, lng: -80.35 },
     { lat: 44.48, lng: -79.58 },
@@ -14,23 +14,24 @@ async function addEconomicBaseLayer(map) {
     { lat: 44.62, lng: -80.35 }
   ];
 
-  // 🔺 Desenhar o polígono do corredor econômico
+  // 🔺 Desenhar o polígono do corredor econômico (15 km buffer aproximado)
   new google.maps.Polygon({
     paths: corridorPath,
     strokeColor: "#FF0000",
-    strokeOpacity: 0.6,
-    strokeWeight: 1,
+    strokeOpacity: 0.8,
+    strokeWeight: 1.2,
     fillOpacity: 0,
     map
   });
 
-  // 📍 Marcadores principais (Toronto e Collingwood)
+  // 📍 Cidades de referência
   const keyCities = [
     { name: "Toronto", lat: 43.6532, lng: -79.3832 },
     { name: "Collingwood", lat: 44.5008, lng: -80.2144 }
   ];
 
   keyCities.forEach(city => {
+    // 🏛️ Marcador do City Hall
     new google.maps.Marker({
       position: { lat: city.lat, lng: city.lng },
       map,
@@ -56,7 +57,7 @@ async function addEconomicBaseLayer(map) {
   console.log("✅ Economic Base Layer rendered successfully.");
 }
 
-// 🔙 Botão de retorno
+// 🔙 Botão de retorno (mantido padronizado)
 function addBackButton() {
   const backButton = document.createElement("a");
   backButton.href = "index.html";
@@ -76,7 +77,7 @@ function addBackButton() {
     fontWeight: "600",
     fontSize: "13px",
     zIndex: "10",
-    transition: "all 0.2s ease-in-out",
+    transition: "all 0.2s ease-in-out"
   });
 
   backButton.addEventListener("mouseover", () => {

@@ -1,14 +1,15 @@
-// investors_cluster_layer.js
 // =============================================================
 // Layer de investidores por cluster de contato (NOBO List)
 // =============================================================
 
 async function addInvestorsClusterLayer(map) {
+  console.log("📥 Loading investor cluster layer...");
+
   // --- 1️⃣ Carregar JSON ---
-  const response = await fetch("data/investors_map.json");
+  const response = await fetch("data/investors.json");
   const investors = await response.json();
 
-  // --- 2️⃣ Definir ícones por cluster ---
+  // --- 2️⃣ Ícones por cluster ---
   const clusterIcons = {
     "Top Priority Contacts": "http://maps.google.com/mapfiles/ms/icons/blue-dot.png",
     "High-Potential Contacts": "http://maps.google.com/mapfiles/ms/icons/purple-dot.png",
@@ -48,23 +49,26 @@ async function addInvestorsClusterLayer(map) {
       });
 
       marker.addListener("click", () => info.open(map, marker));
-
       if (markersByCluster[inv.cluster]) markersByCluster[inv.cluster].push(marker);
     }
   });
 
-  // --- 4️⃣ Criar filtro no canto superior esquerdo ---
+  // --- 4️⃣ Criar caixa de filtros ---
   const filterBox = document.createElement("div");
+  Object.assign(filterBox.style, {
+    position: "absolute",
+    top: "125px",
+    left: "10px",
+    background: "white",
+    padding: "12px 16px",
+    borderRadius: "10px",
+    boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
+    fontSize: "14px",
+    zIndex: "5",
+    lineHeight: "1.6"
+  });
   filterBox.id = "filter-box";
-  filterBox.style.position = "absolute";
-  filterBox.style.top = "125px";
-  filterBox.style.left = "10px";
-  filterBox.style.background = "white";
-  filterBox.style.padding = "12px 16px";
-  filterBox.style.borderRadius = "10px";
-  filterBox.style.boxShadow = "0 2px 8px rgba(0,0,0,0.2)";
-  filterBox.style.fontSize = "14px";
-  filterBox.style.lineHeight = "1.6";
+
   filterBox.innerHTML = `
     <b>Show Clusters:</b>
     <label><input type="checkbox" id="clusterTop" checked> Top Priority</label>
@@ -85,7 +89,39 @@ async function addInvestorsClusterLayer(map) {
     "Do Not Contact": document.getElementById("clusterNon")
   };
 
-  // --- 5️⃣ Lógica de exibição ---
+  // --- 5️⃣ Legenda e contador ---
+  const legend = document.createElement("div");
+  legend.className = "legend";
+  Object.assign(legend.style, {
+    background: "white",
+    padding: "10px",
+    margin: "10px",
+    fontSize: "14px",
+    borderRadius: "8px",
+    boxShadow: "0 2px 6px rgba(0,0,0,0.2)"
+  });
+  legend.innerHTML = "<b>Legend</b><br>";
+
+  for (const [cluster, iconUrl] of Object.entries(clusterIcons)) {
+    const div = document.createElement("div");
+    div.innerHTML = `<img src="${iconUrl}" style="vertical-align:middle; margin-right:6px;"> ${cluster}`;
+    legend.appendChild(div);
+  }
+
+  const counterDiv = document.createElement("div");
+  Object.assign(counterDiv.style, {
+    marginTop: "8px",
+    fontWeight: "bold",
+    textAlign: "center",
+    color: "#17193b"
+  });
+  counterDiv.id = "counter";
+  counterDiv.textContent = "Visible Investors: 0";
+  legend.appendChild(counterDiv);
+
+  map.controls[google.maps.ControlPosition.LEFT_BOTTOM].push(legend);
+
+  // --- 6️⃣ Atualizar visibilidade e contador ---
   function updateCounter() {
     let visibleCount = 0;
     for (const cluster in markersByCluster) {
@@ -104,36 +140,8 @@ async function addInvestorsClusterLayer(map) {
     });
   }
 
-  // --- 6️⃣ Legenda ---
-  const legend = document.createElement("div");
-  legend.className = "legend";
-  legend.style.background = "white";
-  legend.style.padding = "10px";
-  legend.style.margin = "10px";
-  legend.style.fontSize = "14px";
-  legend.style.borderRadius = "8px";
-  legend.style.boxShadow = "0 2px 6px rgba(0,0,0,0.2)";
-  legend.innerHTML = "<b>Legend</b><br>";
-
-  for (const [cluster, iconUrl] of Object.entries(clusterIcons)) {
-    const div = document.createElement("div");
-    div.innerHTML = `<img src="${iconUrl}"> ${cluster}`;
-    legend.appendChild(div);
-  }
-
-  const counterDiv = document.createElement("div");
-  counterDiv.id = "counter";
-  counterDiv.textContent = "Visible Investors: 0";
-  counterDiv.style.marginTop = "8px";
-  counterDiv.style.fontWeight = "bold";
-  counterDiv.style.textAlign = "center";
-  counterDiv.style.color = "#17193b";
-  legend.appendChild(counterDiv);
-
-  map.controls[google.maps.ControlPosition.LEFT_BOTTOM].push(legend);
   updateCounter();
-
-  console.log("✅ Investor cluster layer loaded successfully");
+  console.log("✅ Investor cluster layer loaded successfully.");
 }
 
 // =============================================================
@@ -144,19 +152,23 @@ function addBackButton() {
   backButton.href = "index.html";
   backButton.id = "back-button";
   backButton.textContent = "⬅ Back to Dashboard";
-  backButton.style.position = "absolute";
-  backButton.style.top = "15px";
-  backButton.style.left = "210px";
-  backButton.style.backgroundColor = "white";
-  backButton.style.padding = "8px 14px";
-  backButton.style.borderRadius = "8px";
-  backButton.style.boxShadow = "0 2px 6px rgba(0,0,0,0.2)";
-  backButton.style.color = "#17193b";
-  backButton.style.textDecoration = "none";
-  backButton.style.fontWeight = "600";
-  backButton.style.fontSize = "13px";
-  backButton.style.zIndex = "10";
-  backButton.style.transition = "all 0.2s ease-in-out";
+
+  Object.assign(backButton.style, {
+    position: "absolute",
+    top: "15px",
+    left: "210px",
+    backgroundColor: "white",
+    padding: "8px 14px",
+    borderRadius: "8px",
+    boxShadow: "0 2px 6px rgba(0,0,0,0.2)",
+    color: "#17193b",
+    textDecoration: "none",
+    fontWeight: "600",
+    fontSize: "13px",
+    zIndex: "10",
+    transition: "all 0.2s ease-in-out"
+  });
+
   backButton.addEventListener("mouseover", () => {
     backButton.style.backgroundColor = "#f2f2f2";
     backButton.style.transform = "translateY(-1px)";
@@ -165,5 +177,6 @@ function addBackButton() {
     backButton.style.backgroundColor = "white";
     backButton.style.transform = "translateY(0)";
   });
+
   document.body.appendChild(backButton);
 }
