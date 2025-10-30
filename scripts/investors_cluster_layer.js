@@ -6,7 +6,7 @@ async function addInvestorsClusterLayer(map) {
   console.log("📥 Loading investor cluster layer...");
 
   // --- 1️⃣ Carregar JSON ---
-  const response = await fetch("data/investors.json");
+  const response = await fetch("investors_map.json");
   const investors = await response.json();
 
   // --- 2️⃣ Ícones por cluster ---
