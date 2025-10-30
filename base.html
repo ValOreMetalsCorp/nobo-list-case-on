@@ -8,11 +8,14 @@
         height: 100%;
         margin: 0;
         padding: 0;
+        font-family: Arial, sans-serif;
       }
+
       #map {
         height: 100%;
         width: 100%;
       }
+
       #legend {
         position: absolute;
         bottom: 20px;
@@ -23,11 +26,54 @@
         box-shadow: 0 2px 6px rgba(0,0,0,0.3);
         font-size: 14px;
         line-height: 1.5;
+        z-index: 5;
+      }
+
+      /* 🔹 Header fixo com título e botão */
+      #header {
+        position: absolute;
+        top: 15px;
+        left: 20px;
+        right: 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: rgba(255, 255, 255, 0.9);
+        padding: 10px 16px;
+        border-radius: 10px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+        z-index: 5;
+      }
+
+      #header h2 {
+        margin: 0;
+        font-size: 16px;
+        color: #222;
+      }
+
+      #header button {
+        background: #3b5998;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        padding: 6px 12px;
+        cursor: pointer;
+        font-size: 13px;
+      }
+
+      #header button:hover {
+        background: #2d4373;
       }
     </style>
   </head>
 
   <body>
+    <!-- 🔹 Título e botão voltar -->
+    <div id="header">
+      <h2>High-Income / High-Investment FSAs – Ontario</h2>
+      <button onclick="window.location.href='index.html'">Back to Index</button>
+    </div>
+
     <div id="map"></div>
     <div id="legend"></div>
 
@@ -199,34 +245,9 @@
       }
     </script>
 
-    // 🧭 Atualizar legenda
-        const legend = document.getElementById("legend");
-        legend.innerHTML = `
-          <b>Map Legend</b><br>
-          <div class="legend-item">
-            <div class="legend-symbol" style="background:#708090;opacity:0.25;"></div>
-            15 km coverage areas (High-income & investment FSAs)
-          </div>
-          <div class="legend-item">
-            <div class="legend-symbol" style="border:1px solid #000;background:none;"></div>
-            40 km radius – Toronto & Collingwood
-          </div>
-          <div class="legend-item">
-            <div class="legend-symbol" style="background:#FF0000;"></div>
-            Corridor zone (15 km buffer around Highways 400 & 10)
-          </div>
-          <div class="legend-item">
-            <span style="color:#000;">&#8212;&#8212;&#8212;</span> Highways 400 & 10 (Dashed)
-          </div>
-        `;
-
-        map.controls[google.maps.ControlPosition.LEFT_BOTTOM].push(legend);
-      }
-    </script>
-
-
     <!-- 🔑 Sua chave do Google Maps -->
     <script async
       src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCpc7QvLyEbejJL1bwaV--hsQHS1gFFoWg&callback=initMap">
     </script>
   </body>
+</html>
