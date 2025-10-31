@@ -9,11 +9,7 @@
         margin: 0;
         padding: 0;
       }
-
-      #map {
-        height: 100%;
-        width: 100%;
-      }
+      #map { height: 100%; width: 100%; }
 
       #legend {
         position: absolute;
@@ -28,7 +24,6 @@
         z-index: 3;
       }
 
-      /* 🔹 Header fixo com título e botão */
       #header {
         position: absolute;
         top: 10px;
@@ -61,11 +56,8 @@
         font-size: 12px;
       }
 
-      #header button:hover {
-        background: #2d4373;
-      }
+      #header button:hover { background: #2d4373; }
 
-      /* 🔹 Filtro lateral */
       #filter-box {
         position: absolute;
         top: 70px;
@@ -85,12 +77,8 @@
         color: #17193b;
       }
 
-      #filter-box label {
-        display: block;
-        margin: 3px 0;
-      }
+      #filter-box label { display: block; margin: 3px 0; }
 
-      /* 🔹 Contador de investidores */
       #counter {
         margin-top: 8px;
         font-weight: bold;
@@ -101,13 +89,11 @@
   </head>
 
   <body>
-    <!-- 🔹 Título e botão voltar -->
     <div id="header">
       <h2>Investor & Priority Area Map – Ontario</h2>
       <button onclick="window.location.href='index.html'">Back to Index</button>
     </div>
 
-    <!-- 🔹 Filtro -->
     <div id="filter-box">
       <b>Show Clusters:</b>
       <label><input type="checkbox" id="clusterTop" checked> Top Priority</label>
@@ -170,7 +156,7 @@
         const collingwood = { lat: 44.5008, lng: -80.2144 };
         const toronto = { lat: 43.6532, lng: -79.3832 };
 
-        [ 
+        [
           { position: collingwood, title: "Collingwood City Hall" },
           { position: toronto, title: "Toronto City Hall" }
         ].forEach(city => {
@@ -280,7 +266,7 @@
               title: `${inv.name} (${inv.city})`,
               icon: {
                 url: clusterIcons[inv.cluster] || "http://maps.google.com/mapfiles/ms/icons/gray-dot.png",
-                scaledSize: new google.maps.Size(18, 18) // 🔹 Pinos menores
+                scaledSize: new google.maps.Size(18, 18)
               }
             });
 
@@ -305,7 +291,6 @@
           }
         });
 
-        // 🔹 Filtro e contador
         const checkboxes = {
           "Top Priority Contacts": document.getElementById("clusterTop"),
           "High-Potential Contacts": document.getElementById("clusterHigh"),
@@ -375,12 +360,35 @@
           <img src="http://maps.google.com/mapfiles/ms/icons/orange-dot.png"> Pending Contact Method<br>
           <img src="http://maps.google.com/mapfiles/ms/icons/yellow-dot.png"> Do Not Contact<br>
         `;
+
+        /* ===========================================================
+           5️⃣ NEWMARKET TEST CIRCLE
+        =========================================================== */
+        const newmarket = { lat: 44.04137, lng: -79.47431 };
+
+        new google.maps.Circle({
+          strokeColor: "#000000",
+          strokeOpacity: 0.9,
+          strokeWeight: 1.5,
+          fillColor: "#000000",
+          fillOpacity: 0.0,
+          map,
+          center: newmarket,
+          radius: 7500 // 🔹 7.5 km = 15 km diameter
+        });
+
+        new google.maps.Marker({
+          position: newmarket,
+          map,
+          title: "Investor – Newmarket",
+          icon: {
+            url: "http://maps.google.com/mapfiles/ms/icons/red-dot.png",
+            scaledSize: new google.maps.Size(22, 22)
+          }
+        });
       }
     </script>
 
-    <!-- 🔑 Google Maps API -->
-    <script async
-      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCpc7QvLyEbejJL1bwaV--hsQHS1gFFoWg&callback=initMap">
-    </script>
+    <script async src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCpc7QvLyEbejJL1bwaV--hsQHS1gFFoWg&callback=initMap"></script>
   </body>
 </html>
