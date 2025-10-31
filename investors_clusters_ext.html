@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Investor & Priority Area Map – Ontario (Extended Area)</title>
+    <style>
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+
+      #map {
+        height: 100%;
+        width: 100%;
+      }
+
+      #legend {
+        position: absolute;
+        bottom: 20px;
+        left: 20px;
+        background: white;
+        padding: 10px 14px;
+        border-radius: 8px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+        font-size: 14px;
+        line-height: 1.5;
+        z-index: 3;
+      }
+
+      #header {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        background: rgba(255, 255, 255, 0.95);
+        padding: 8px 14px;
+        border-radius: 10px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+        font-family: Arial, sans-serif;
+        z-index: 20;
+      }
+
+      #header h2 {
+        margin: 0;
+        font-size: 15px;
+        color: #222;
+        white-space: nowrap;
+      }
+
+      #header button {
+        background: #3b5998;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        padding: 5px 10px;
+        cursor: pointer;
+        font-size: 12px;
+      }
+
+      #header button:hover {
+        background: #2d4373;
+      }
+
+      #filter-box {
+        position: absolute;
+        top: 70px;
+        left: 10px;
+        background: white;
+        padding: 12px 16px;
+        border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        font-size: 14px;
+        z-index: 10;
+        line-height: 1.6;
+      }
+
+      #filter-box b {
+        display: block;
+        margin-bottom: 4px;
+        color: #17193b;
+      }
+
+      #filter-box label {
+        display: block;
+        margin: 3px 0;
+      }
+
+      #counter {
+        margin-top: 8px;
+        font-weight: bold;
+        text-align: center;
+        color: #17193b;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="header">
+      <h2>Investor & Priority Area Map – Ontario</h2>
+      <button onclick="window.location.href='index.html'">Back to Index</button>
+    </div>
+
+    <div id="filter-box">
+      <b>Show Clusters:</b>
+      <label><input type="checkbox" id="clusterTop" checked> Top Priority</label>
+      <label><input type="checkbox" id="clusterHigh" checked> High-Potential</label>
+      <label><input type="checkbox" id="clusterPotential" checked> Potential</label>
+      <label><input type="checkbox" id="clusterLow" checked> Low-Potential</label>
+      <label><input type="checkbox" id="clusterPending" checked> Pending Contact Method</label>
+      <label><input type="checkbox" id="clusterNon" checked> Do Not Contact</label>
+      <div id="counter">Visible Investors: 0</div>
+    </div>
+
+    <div id="map"></div>
+    <div id="legend"></div>
+
+    <script>
+      async function initMap() {
+        const map = new google.maps.Map(document.getElementById("map"), {
+          zoom: 8.3,
+          center: { lat: 44.2, lng: -79.9 },
+          mapTypeId: "roadmap"
+        });
+
+        /* ===========================================================
+           1️⃣ ÁREAS SOCIOECONÔMICAS
+        =========================================================== */
+        const baseResponse = await fetch("ontario_socioeconomic_clusters_geo.json");
+        const baseData = await baseResponse.json();
+        const filtered = baseData.filter(d => d.socioeconomic_cluster === 1);
+
+        filtered.forEach(d => {
+          const lat = parseFloat(d.lat);
+          const lon = parseFloat(d.lon);
+          if (!isNaN(lat) && !isNaN(lon)) {
+            new google.maps.Circle({
+              strokeOpacity: 0,
+              fillColor: "#708090",
+              fillOpacity: 0.25,
+              map,
+              center: { lat, lng: lon },
+              radius: 15000
+            });
+          }
+        });
+
+        /* ===========================================================
+           2️⃣ REFERÊNCIAS GEOGRÁFICAS E CORRIDOR
+        =========================================================== */
+        const collingwood = { lat: 44.5008, lng: -80.2144 };
+        const barrie = { lat: 44.3894, lng: -79.6903 };
+        const toronto = { lat: 43.6532, lng: -79.3832 };
+        const burlington = { lat: 43.3255, lng: -79.7990 };
+
+        [
+          { position: collingwood, title: "Collingwood" },
+          { position: barrie, title: "Barrie" },
+          { position: toronto, title: "Toronto" },
+          { position: burlington, title: "Burlington" }
+        ].forEach(city => {
+          new google.maps.Marker({
+            position: city.position,
+            map,
+            icon: {
+              url: "http://maps.google.com/mapfiles/kml/shapes/capital_small.png",
+              scaledSize: new google.maps.Size(34, 34)
+            },
+            title: city.title
+          });
+        });
+
+        // 🔹 Círculos estratégicos (sem preenchimento)
+        const circles = [
+          { center: collingwood, radius: 40000 },
+          { center: barrie, radius: 20000 },
+          { center: toronto, radius: 50000 },
+          { center: burlington, radius: 15000 }
+        ];
+        circles.forEach(area => {
+          new google.maps.Circle({
+            strokeColor: "#555555",
+            strokeOpacity: 0.8,
+            strokeWeight: 1,
+            fillOpacity: 0.0,
+            map,
+            center: area.center,
+            radius: area.radius
+          });
+        });
+
+        // 🔹 Highways 400 e 10
+        const highway400 = [
+          collingwood,
+          { lat: 44.39, lng: -79.69 },
+          { lat: 43.9, lng: -79.51 },
+          toronto
+        ];
+        const highway10 = [
+          collingwood,
+          { lat: 44.3, lng: -80.0 },
+          { lat: 43.9, lng: -79.9 },
+          toronto
+        ];
+
+        [highway400, highway10].forEach(path => {
+          new google.maps.Polyline({
+            path,
+            geodesic: true,
+            strokeColor: "#000000",
+            strokeOpacity: 0.8,
+            strokeWeight: 1,
+            icons: [
+              {
+                icon: { path: "M 0,-1 0,1", strokeOpacity: 1, scale: 4 },
+                offset: "0",
+                repeat: "20px"
+              }
+            ],
+            map
+          });
+        });
+
+        // 🔹 Corredor (linha vermelha)
+        const corridor = [
+          { lat: 44.62, lng: -80.35 },
+          { lat: 44.48, lng: -79.58 },
+          { lat: 44.05, lng: -79.3 },
+          { lat: 43.6, lng: -79.35 },
+          { lat: 43.55, lng: -79.85 },
+          { lat: 43.85, lng: -80.15 },
+          { lat: 44.35, lng: -80.25 },
+          { lat: 44.62, lng: -80.35 }
+        ];
+        new google.maps.Polygon({
+          paths: corridor,
+          strokeColor: "#FF0000",
+          strokeOpacity: 0.8,
+          strokeWeight: 1,
+          fillOpacity: 0,
+          map
+        });
+
+        /* ===========================================================
+           3️⃣ INVESTORS + CLUSTERS + FILTRO
+        =========================================================== */
+        const invResponse = await fetch("investors_map.json");
+        const investors = await invResponse.json();
+
+        const clusterIcons = {
+          "Top Priority Contacts": "http://maps.google.com/mapfiles/ms/icons/green-dot.png",
+          "High-Potential Contacts": "http://maps.google.com/mapfiles/ms/icons/blue-dot.png",
+          "Potential Contacts": "http://maps.google.com/mapfiles/ms/icons/purple-dot.png",
+          "Low-Potential Contacts": "http://maps.google.com/mapfiles/ms/icons/pink-dot.png",
+          "Pending Contact Method": "http://maps.google.com/mapfiles/ms/icons/orange-dot.png",
+          "Do Not Contact": "http://maps.google.com/mapfiles/ms/icons/yellow-dot.png"
+        };
+
+        const markersByCluster = {};
+        for (const cluster in clusterIcons) {
+          markersByCluster[cluster] = [];
+        }
+
+        investors.forEach(inv => {
+          if (inv.lat && inv.lon) {
+            const latOffset = (Math.random() - 0.5) * 0.0006;
+            const lonOffset = (Math.random() - 0.5) * 0.0006;
+
+            const marker = new google.maps.Marker({
+              position: { lat: inv.lat + latOffset, lng: inv.lon + lonOffset },
+              map: map,
+              title: `${inv.name} (${inv.city})`,
+              icon: {
+                url: clusterIcons[inv.cluster] || "http://maps.google.com/mapfiles/ms/icons/gray-dot.png",
+                scaledSize: new google.maps.Size(18, 18)
+              }
+            });
+
+            const info = new google.maps.InfoWindow({
+              content: `
+                <div style="font-size:14px; line-height:1.4;">
+                  <b>${inv.name}</b><br>
+                  City: ${inv.city}<br>
+                  Province: ${inv.province}<br>
+                  Shares: ${Number(inv.shares).toLocaleString()}<br>
+                  Cluster: ${inv.cluster}<br>
+                  Avg. Income: ${inv.income ? "$" + Number(inv.income).toFixed(1) + "K" : "N/A"}<br>
+                  Avg. Age: ${inv.age ? Math.round(inv.age) + " years" : "N/A"}
+                </div>`
+            });
+            marker.addListener("click", () => info.open(map, marker));
+            if (markersByCluster[inv.cluster]) {
+              markersByCluster[inv.cluster].push(marker);
+            }
+          }
+        });
+
+        // 🔹 Filtro e contador
+        const checkboxes = {
+          "Top Priority Contacts": document.getElementById("clusterTop"),
+          "High-Potential Contacts": document.getElementById("clusterHigh"),
+          "Potential Contacts": document.getElementById("clusterPotential"),
+          "Low-Potential Contacts": document.getElementById("clusterLow"),
+          "Pending Contact Method": document.getElementById("clusterPending"),
+          "Do Not Contact": document.getElementById("clusterNon")
+        };
+
+        function updateCounter() {
+          let visibleCount = 0;
+          for (const cluster in markersByCluster) {
+            markersByCluster[cluster].forEach(marker => {
+              if (marker.getVisible()) visibleCount++;
+            });
+          }
+          document.getElementById("counter").textContent = `Visible Investors: ${visibleCount}`;
+        }
+
+        for (const [cluster, checkbox] of Object.entries(checkboxes)) {
+          checkbox.addEventListener("change", () => {
+            const visible = checkbox.checked;
+            markersByCluster[cluster].forEach(marker => marker.setVisible(visible));
+            updateCounter();
+          });
+        }
+        updateCounter();
+
+        /* ===========================================================
+           4️⃣ LEGENDA ATUALIZADA
+        =========================================================== */
+        const legend = document.getElementById("legend");
+        legend.innerHTML = `
+          <b>Map Legend</b><br>
+
+          <div style="display:flex;align-items:center;margin-bottom:5px;">
+            <div style="width:14px;height:14px;border:1px solid #555;border-radius:50%;margin-right:6px;"></div>
+            <b>Toronto area</b> – 50 km radius
+          </div>
+          <div style="display:flex;align-items:center;margin-bottom:5px;">
+            <div style="width:14px;height:14px;border:1px solid #555;border-radius:50%;margin-right:6px;"></div>
+            <b>Burlington area</b> – 15 km radius
+          </div>
+          <div style="display:flex;align-items:center;margin-bottom:5px;">
+            <div style="width:14px;height:14px;border:1px solid #555;border-radius:50%;margin-right:6px;"></div>
+            <b>Barrie area</b> – 20 km radius
+          </div>
+          <div style="display:flex;align-items:center;margin-bottom:5px;">
+            <div style="width:14px;height:14px;border:1px solid #555;border-radius:50%;margin-right:6px;"></div>
+            <b>Collingwood area</b> – 40 km radius
+          </div>
+
+          <hr style="margin:6px 0;">
+          <div style="display:flex;align-items:center;margin-bottom:5px;">
+            <span style="color:#FF0000;margin-right:6px;">&#8212;&#8212;&#8212;&#8212;</span>
+            <b>Corridor</b> – ≈15 km buffer along Highways 400 & 10
+          </div>
+          <div style="display:flex;align-items:center;margin-bottom:8px;">
+            <span style="color:#000;margin-right:6px;">&#8212;&#8212;&#8212;</span>
+            Highways 400 & 10 (dashed)
+          </div>
+
+          <b>Investor Clusters</b><br>
+          <img src="http://maps.google.com/mapfiles/ms/icons/green-dot.png"> Top Priority<br>
+          <img src="http://maps.google.com/mapfiles/ms/icons/blue-dot.png"> High-Potential<br>
+          <img src="http://maps.google.com/mapfiles/ms/icons/purple-dot.png"> Potential<br>
+          <img src="http://maps.google.com/mapfiles/ms/icons/pink-dot.png"> Low-Potential<br>
+          <img src="http://maps.google.com/mapfiles/ms/icons/orange-dot.png"> Pending Contact Method<br>
+          <img src="http://maps.google.com/mapfiles/ms/icons/yellow-dot.png"> Do Not Contact<br>
+        `;
+      }
+    </script>
+
+    <!-- 🔑 Google Maps API -->
+    <script async
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCpc7QvLyEbejJL1bwaV--hsQHS1gFFoWg&callback=initMap">
+    </script>
+  </body>
+</html>
