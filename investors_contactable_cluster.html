@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ValOre – NOBO Investors (Contact Cluster)</title>
+
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      font-family: Arial, sans-serif;
+      overflow: hidden;
+    }
+
+    #map {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+    }
+
+    /* HEADER */
+    #header {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: rgba(255,255,255,0.95);
+      padding: 8px 14px;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+      z-index: 40;
+    }
+
+    #header h2 {
+      margin: 0;
+      font-size: 15px;
+      color: #222;
+      white-space: nowrap;
+    }
+
+    #back-btn {
+      text-decoration: none;
+      background: #3b5998;
+      color: white;
+      border-radius: 6px;
+      padding: 5px 10px;
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    #back-btn:hover {
+      background: #2d4373;
+    }
+
+    /* FILTERS */
+    #filter-box {
+      position: absolute;
+      top: 70px;
+      left: 10px;
+      background: white;
+      padding: 12px 16px;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      font-size: 14px;
+      z-index: 30;
+      width: 260px;
+      max-height: calc(100vh - 150px);
+      overflow-y: auto;
+    }
+
+    #filter-box b {
+      display: block;
+      margin: 10px 0 6px;
+      color: #17193b;
+      font-weight: bold;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 4px;
+    }
+
+    .checkbox-list {
+      max-height: 160px;
+      overflow-y: auto;
+      border: 1px solid #eee;
+      border-radius: 4px;
+      padding: 6px;
+      background: #fcfcfc;
+    }
+
+    .checkbox-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 4px;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    .checkbox-item input {
+      margin-right: 8px;
+    }
+
+    #counter {
+      margin-top: 12px;
+      padding-top: 10px;
+      border-top: 2px solid #eee;
+      font-weight: bold;
+      text-align: center;
+      font-size: 13px;
+      color: #17193b;
+    }
+
+    #legend {
+      position: absolute;
+      bottom: 20px;
+      left: 20px;
+      background: white;
+      padding: 10px 14px;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+      font-size: 13px;
+      line-height: 1.5;
+      z-index: 20;
+    }
+
+    #legend img {
+      width: 18px;
+      height: 18px;
+      vertical-align: middle;
+      margin-right: 6px;
+    }
+  </style>
+</head>
+
+<body>
+
+<div id="header">
+  <a id="back-btn" href="index.html">← Back</a>
+  <h2>ValOre – NOBO Investors by Contact Cluster (Ontario)</h2>
+</div>
+
+<div id="filter-box">
+  <b>Contact Cluster</b>
+  <div class="checkbox-list">
+    <label class="checkbox-item"><input type="checkbox" name="cluster" value="top priority" checked> Top Priority</label>
+    <label class="checkbox-item"><input type="checkbox" name="cluster" value="high-potential" checked> High-Potential</label>
+    <label class="checkbox-item"><input type="checkbox" name="cluster" value="potential" checked> Potential</label>
+    <label class="checkbox-item"><input type="checkbox" name="cluster" value="low-potential" checked> Low-Potential</label>
+    <label class="checkbox-item"><input type="checkbox" name="cluster" value="pending" checked> Pending Contact Method</label>
+    <label class="checkbox-item"><input type="checkbox" name="cluster" value="do not contact" checked> Do Not Contact</label>
+  </div>
+
+  <div id="counter">Loading data...</div>
+</div>
+
+<div id="map"></div>
+<div id="legend"></div>
+
+<script>
+/* =========================
+   UTILS
+========================= */
+function normalize(str) {
+  return String(str || "").toLowerCase().replace(/[^a-z]/g, "");
+}
+
+/* =========================
+   CONFIG
+========================= */
+const TORONTO = { lat: 43.6532, lng: -79.3832 };
+
+const CLUSTER_ICONS_RAW = {
+  "top priority contacts": "https://maps.google.com/mapfiles/ms/icons/green-dot.png",
+  "high-potential contacts": "https://maps.google.com/mapfiles/ms/icons/blue-dot.png",
+  "potential contacts": "https://maps.google.com/mapfiles/ms/icons/purple-dot.png",
+  "low-potential contacts": "https://maps.google.com/mapfiles/ms/icons/pink-dot.png",
+  "pending contact method consent without email": "https://maps.google.com/mapfiles/ms/icons/orange-dot.png",
+  "do not contact": "https://maps.google.com/mapfiles/ms/icons/yellow-dot.png"
+};
+
+const CLUSTER_ICONS = {};
+Object.keys(CLUSTER_ICONS_RAW).forEach(k => {
+  CLUSTER_ICONS[normalize(k)] = CLUSTER_ICONS_RAW[k];
+});
+
+let map;
+let markers = [];
+let allInvestors = [];
+
+/* =========================
+   MAP
+========================= */
+async function initMap() {
+  map = new google.maps.Map(document.getElementById("map"), {
+    zoom: 8.2,
+    center: TORONTO,
+    mapTypeControl: false,
+    streetViewControl: false
+  });
+
+  setupLegend();
+
+  const res = await fetch("investors_nobo_minimal.json");
+  allInvestors = await res.json();
+  renderMarkers();
+}
+
+function renderMarkers() {
+  markers.forEach(m => m.setMap(null));
+  markers = [];
+
+  const selectedClusters = Array.from(
+    document.querySelectorAll("input[name='cluster']:checked")
+  ).map(cb => cb.value);
+
+  let count = 0;
+
+  allInvestors.forEach(inv => {
+    const lat = Number(inv.lat);
+    const lon = Number(inv.lon);
+    if (isNaN(lat) || isNaN(lon)) return;
+
+    const rawCluster = inv["Final Investor Cluster"];
+    if (!rawCluster) return;
+
+    const clusterNorm = normalize(rawCluster);
+
+    const match = selectedClusters.some(f =>
+      clusterNorm.includes(f.replace(/[^a-z]/g, ""))
+    );
+    if (!match) return;
+
+    const icon = CLUSTER_ICONS[clusterNorm];
+    if (!icon) return;
+
+    const marker = new google.maps.Marker({
+      map,
+      position: { lat, lng: lon },
+      icon: { url: icon, scaledSize: new google.maps.Size(18, 18) }
+    });
+
+    markers.push(marker);
+    count++;
+  });
+
+  document.getElementById("counter").innerText =
+    `Shown: ${count} Investors`;
+}
+
+function setupLegend() {
+  document.getElementById("legend").innerHTML = `
+    <b>Contact Cluster</b><br>
+    <img src="https://maps.google.com/mapfiles/ms/icons/green-dot.png"> Top Priority<br>
+    <img src="https://maps.google.com/mapfiles/ms/icons/blue-dot.png"> High-Potential<br>
+    <img src="https://maps.google.com/mapfiles/ms/icons/purple-dot.png"> Potential<br>
+    <img src="https://maps.google.com/mapfiles/ms/icons/pink-dot.png"> Low-Potential<br>
+    <img src="https://maps.google.com/mapfiles/ms/icons/orange-dot.png"> Pending Contact Method<br>
+    <img src="https://maps.google.com/mapfiles/ms/icons/yellow-dot.png"> Do Not Contact
+  `;
+}
+
+document.addEventListener("change", e => {
+  if (e.target.type === "checkbox") renderMarkers();
+});
+
+window.initMap = initMap;
+</script>
+
+<script async
+  src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDy3FD3k3MpOnMGZvfo7IOeq9SKESf35fg&callback=initMap">
+</script>
+
+</body>
+</html>
