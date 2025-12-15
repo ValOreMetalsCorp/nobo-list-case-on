@@ -2,20 +2,57 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>ValOre – NOBO Investors (Final Checkboxes)</title>
+  <title>ValOre – NOBO Investors (Materials)</title>
 
   <style>
-    html, body { height: 100%; margin: 0; font-family: Arial, sans-serif; }
-    
-    #map { height: 100%; width: 100%; }
-
-    #header {
-      position: absolute; top: 10px; left: 10px; background: rgba(255,255,255,0.95);
-      padding: 8px 14px; border-radius: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.25);
-      z-index: 30;
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
     }
-    #header h2 { margin: 0; font-size: 15px; color: #222; }
 
+    #map {
+      height: 100%;
+      width: 100%;
+    }
+
+    /* 🔹 NOVO HEADER FIXO COM BOTÃO */
+    #header {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: rgba(255, 255, 255, 0.95);
+      padding: 8px 14px;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+      z-index: 30; /* Garante que fique acima do mapa */
+    }
+
+    #header h2 {
+      margin: 0;
+      font-size: 15px;
+      color: #222;
+      white-space: nowrap;
+    }
+
+    #header button {
+      background: #3b5998;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 5px 12px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    #header button:hover {
+      background: #2d4373;
+    }
     /* 🔹 LAYOUT DO FILTRO */
     #filter-box {
       position: absolute;
