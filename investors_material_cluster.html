@@ -2,19 +2,27 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ValOre – NOBO Investors (Materials)</title>
 
   <style>
+    /* 🔹 GERAL */
     html, body {
       height: 100%;
       margin: 0;
       padding: 0;
       font-family: Arial, sans-serif;
+      overflow: hidden; /* Evita barras de rolagem duplas */
     }
 
+    /* 🔹 MAPA */
     #map {
+      position: absolute;
+      top: 0;
+      left: 0;
       height: 100%;
       width: 100%;
+      z-index: 0;
     }
 
     /* 🔹 HEADER FIXO */
@@ -30,6 +38,7 @@
       border-radius: 10px;
       box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
       z-index: 40;
+      max-width: 90%; /* Evita quebra em telas pequenas */
     }
 
     #header h2 {
@@ -37,6 +46,8 @@
       font-size: 15px;
       color: #222;
       white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     /* 🔹 BOTÃO BACK */
@@ -49,6 +60,7 @@
       font-size: 12px;
       font-weight: bold;
       transition: background 0.2s ease;
+      white-space: nowrap;
     }
 
     #back-btn:hover {
@@ -67,8 +79,8 @@
       font-size: 14px;
       z-index: 30;
       line-height: 1.5;
-      min-width: 250px;
-      max-height: 85vh;
+      width: 250px;
+      max-height: calc(100vh - 150px); /* Ajuste dinâmico de altura */
       overflow-y: auto;
     }
 
@@ -129,23 +141,22 @@
       font-size: 13px;
       line-height: 1.5;
       z-index: 20;
+      display: none; /* Só aparece se tiver conteúdo */
     }
   </style>
 </head>
 
 <body>
 
-<!-- 🔹 HEADER -->
 <div id="header">
   <a id="back-btn" href="index.html">← Back</a>
   <h2>ValOre – NOBO Investors by Materials Cluster (Ontario)</h2>
 </div>
 
-<!-- 🔹 FILTROS -->
 <div id="filter-box">
 
   <b>Material Cluster</b>
-  <div class="checkbox-list">
+  <div class="checkbox-list" id="cluster-filters">
     <label class="checkbox-item"><input type="checkbox" name="cluster" value="top priority" checked> Top Priority</label>
     <label class="checkbox-item"><input type="checkbox" name="cluster" value="high priority" checked> High Priority</label>
     <label class="checkbox-item"><input type="checkbox" name="cluster" value="medium priority" checked> Medium Priority</label>
@@ -155,7 +166,7 @@
   </div>
 
   <b>Distance Category</b>
-  <div class="checkbox-list">
+  <div class="checkbox-list" id="dist-filters">
     <label class="checkbox-item"><input type="checkbox" name="dist" value="local" checked> Local (≤ 10 km)</label>
     <label class="checkbox-item"><input type="checkbox" name="dist" value="nearby" checked> Nearby (10–40 km)</label>
     <label class="checkbox-item"><input type="checkbox" name="dist" value="medium" checked> Medium (40–100 km)</label>
@@ -163,15 +174,57 @@
     <label class="checkbox-item"><input type="checkbox" name="dist" value="distant" checked> Distant (> 300 km)</label>
   </div>
 
-  <div id="counter">Loading...</div>
+  <div id="counter">Loading map...</div>
 </div>
 
 <div id="map"></div>
 <div id="legend"></div>
 
-<!-- 🔹 JS (SEU CÓDIGO — INTACTO) -->
 <script>
-  /* TODO: mantém exatamente a lógica JS que você já tem */
+  let map;
+  let markers = []; // Array para armazenar seus marcadores
+  
+  // Esta é a função que o Google chama quando a API carrega
+  function initMap() {
+    console.log("Inicializando Google Maps...");
+
+    // 1. Cria o mapa
+    // Ajustei o centro para coordenadas genéricas de Ontario, ajuste conforme necessário
+    map = new google.maps.Map(document.getElementById("map"), {
+      center: { lat: 50.0, lng: -85.0 }, 
+      zoom: 6,
+      mapTypeControl: false,
+      streetViewControl: false
+    });
+
+    // 2. Aqui você deve carregar seus dados e criar os marcadores
+    // Exemplo de como integrar com sua lógica antiga:
+    // loadDataAndCreateMarkers();
+    
+    document.getElementById("counter").innerText = "Map Ready (0 items)";
+    
+    // Adiciona Listeners aos filtros para não quebrar a UI
+    attachFilterEvents();
+  }
+
+  function attachFilterEvents() {
+    const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+    checkboxes.forEach(box => {
+      box.addEventListener('change', () => {
+        // Chame sua função de filtrar aqui
+        console.log("Filtro alterado: " + box.value);
+        updateCounter(); 
+      });
+    });
+  }
+
+  function updateCounter() {
+    // Apenas um placeholder para evitar erros visuais
+    document.getElementById("counter").innerText = "Filters updated";
+  }
+
+  // Torna a função initMap global para que a API consiga encontrá-la
+  window.initMap = initMap;
 </script>
 
 <script async
