@@ -3,29 +3,23 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ValOre – NOBO Investors (Materials)</title>
+  <title>ValOre – NOBO Investors | Materials Delivery (Ontario)</title>
 
   <style>
-    /* 🔹 GERAL */
     html, body {
       height: 100%;
       margin: 0;
-      padding: 0;
       font-family: Arial, sans-serif;
-      overflow: hidden; 
+      overflow: hidden;
     }
 
-    /* 🔹 MAPA */
     #map {
       position: absolute;
-      top: 0;
-      left: 0;
-      height: 100%;
-      width: 100%;
+      inset: 0;
       z-index: 0;
     }
 
-    /* 🔹 HEADER FIXO */
+    /* HEADER */
     #header {
       position: absolute;
       top: 10px;
@@ -33,12 +27,12 @@
       display: flex;
       align-items: center;
       gap: 12px;
-      background: rgba(255, 255, 255, 0.95);
+      background: rgba(255,255,255,0.95);
       padding: 8px 14px;
       border-radius: 10px;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.25);
       z-index: 40;
-      max-width: 90%; 
+      max-width: 90%;
     }
 
     #header h2 {
@@ -50,7 +44,6 @@
       text-overflow: ellipsis;
     }
 
-    /* 🔹 BOTÃO BACK */
     #back-btn {
       text-decoration: none;
       background: #3b5998;
@@ -59,77 +52,66 @@
       padding: 5px 10px;
       font-size: 12px;
       font-weight: bold;
-      transition: background 0.2s ease;
-      white-space: nowrap;
     }
 
-    #back-btn:hover {
-      background: #2d4373;
-    }
+    #back-btn:hover { background: #2d4373; }
 
-    /* 🔹 FILTROS */
+    /* FILTER BOX */
     #filter-box {
       position: absolute;
       top: 70px;
       left: 10px;
+      width: 260px;
       background: white;
       padding: 12px 16px;
       border-radius: 10px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-      font-size: 14px;
       z-index: 30;
-      line-height: 1.5;
-      width: 250px;
       max-height: calc(100vh - 150px);
       overflow-y: auto;
+      font-size: 13px;
     }
 
     #filter-box b {
       display: block;
       margin: 10px 0 6px;
-      color: #17193b;
       font-weight: bold;
       border-bottom: 1px solid #eee;
       padding-bottom: 4px;
+      color: #17193b;
     }
 
-    #filter-box b:first-child { margin-top: 0; }
-
     .checkbox-list {
-      max-height: 150px;
-      overflow-y: auto;
       border: 1px solid #eee;
       border-radius: 4px;
       padding: 6px;
       background: #fcfcfc;
+      max-height: 160px;
+      overflow-y: auto;
     }
 
     .checkbox-item {
       display: flex;
       align-items: center;
+      gap: 8px;
       margin-bottom: 4px;
-      font-size: 13px;
       cursor: pointer;
     }
 
-    .checkbox-item input {
-      margin-right: 8px;
-    }
-
     .checkbox-item:hover {
-      background-color: #f0f0f0;
+      background: #f0f0f0;
     }
 
     #counter {
       margin-top: 12px;
       padding-top: 10px;
       border-top: 2px solid #eee;
-      font-weight: bold;
       text-align: center;
-      font-size: 13px;
+      font-weight: bold;
       color: #17193b;
     }
 
+    /* LEGEND */
     #legend {
       position: absolute;
       bottom: 20px;
@@ -139,16 +121,14 @@
       border-radius: 8px;
       box-shadow: 0 2px 6px rgba(0,0,0,0.3);
       font-size: 13px;
-      line-height: 1.5;
       z-index: 20;
-      display: none; /* JS vai mudar para block */
     }
 
     #legend img {
-        vertical-align: middle;
-        margin-right: 5px;
-        width: 18px; 
-        height: 18px;
+      width: 18px;
+      height: 18px;
+      vertical-align: middle;
+      margin-right: 6px;
     }
   </style>
 </head>
@@ -157,175 +137,125 @@
 
 <div id="header">
   <a id="back-btn" href="index.html">← Back</a>
-  <h2>ValOre – NOBO Investors by Materials Cluster (Ontario)</h2>
+  <h2>ValOre – Materials Delivery Clusters (Ontario)</h2>
 </div>
 
 <div id="filter-box">
 
-  <b>Material Cluster</b>
-  <div class="checkbox-list" id="cluster-list">
-    <label class="checkbox-item"><input type="checkbox" name="cluster" value="top priority" checked> Top Priority</label>
-    <label class="checkbox-item"><input type="checkbox" name="cluster" value="high priority" checked> High Priority</label>
-    <label class="checkbox-item"><input type="checkbox" name="cluster" value="medium priority" checked> Medium Priority</label>
-    <label class="checkbox-item"><input type="checkbox" name="cluster" value="low priority" checked> Low Priority</label>
-    <label class="checkbox-item"><input type="checkbox" name="cluster" value="delivery restricted s" checked> Delivery Restricted S</label>
-    <label class="checkbox-item"><input type="checkbox" name="cluster" value="delivery restricted d" checked> Delivery Restricted D</label>
+  <b>Material Delivery Cluster</b>
+  <div class="checkbox-list">
+    <label class="checkbox-item"><input type="checkbox" name="cluster" value="top priority" checked> Top Priority – Authorized (A)</label>
+    <label class="checkbox-item"><input type="checkbox" name="cluster" value="high potential" checked> High Potential – Authorized (A)</label>
+    <label class="checkbox-item"><input type="checkbox" name="cluster" value="medium potential" checked> Medium Potential – Authorized (A)</label>
+    <label class="checkbox-item"><input type="checkbox" name="cluster" value="low potential" checked> Low Potential – Authorized (A)</label>
+    <label class="checkbox-item"><input type="checkbox" name="cluster" value="restricted" checked> Restricted – Selective Materials (S)</label>
+    <label class="checkbox-item"><input type="checkbox" name="cluster" value="declined" checked> Declined – No Materials (D)</label>
   </div>
 
-  <b>Distance Category</b>
-  <div class="checkbox-list" id="distance-list">
-    <label class="checkbox-item"><input type="checkbox" name="dist" value="local" checked> Local (≤ 10 km)</label>
-    <label class="checkbox-item"><input type="checkbox" name="dist" value="nearby" checked> Nearby (10 - 40 km)</label>
-    <label class="checkbox-item"><input type="checkbox" name="dist" value="medium" checked> Medium (40 - 100 km)</label>
-    <label class="checkbox-item"><input type="checkbox" name="dist" value="regional" checked> Regional (100 - 300 km)</label>
-    <label class="checkbox-item"><input type="checkbox" name="dist" value="distant" checked> Distant (> 300 km)</label>
+  <b>Distance from Toronto City Hall</b>
+  <div class="checkbox-list">
+    <label class="checkbox-item"><input type="checkbox" name="dist" value="local" checked> ≤ 10 km</label>
+    <label class="checkbox-item"><input type="checkbox" name="dist" value="nearby" checked> 10 – 40 km</label>
+    <label class="checkbox-item"><input type="checkbox" name="dist" value="medium" checked> 40 – 100 km</label>
+    <label class="checkbox-item"><input type="checkbox" name="dist" value="regional" checked> 100 – 300 km</label>
+    <label class="checkbox-item"><input type="checkbox" name="dist" value="distant" checked> > 300 km</label>
   </div>
 
-  <div id="counter">Loading data...</div>
+  <div id="counter">Loading…</div>
 </div>
 
 <div id="map"></div>
 <div id="legend"></div>
 
 <script>
-/* ============================
-   UTIL & CÁLCULOS
-============================ */
+/* =========================
+   UTILS
+========================= */
 function normalize(str) {
   return String(str || "").toLowerCase().replace(/[^a-z0-9]/g, "");
 }
 
 function haversineDistance(lat1, lon1, lat2, lon2) {
-  const R = 6371; 
+  const R = 6371;
   const dLat = (lat2 - lat1) * Math.PI / 180;
   const dLon = (lon2 - lon1) * Math.PI / 180;
-  const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-            Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-            Math.sin(dLon / 2) * Math.sin(dLon / 2);
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-  return R * c;
+  const a =
+    Math.sin(dLat/2)**2 +
+    Math.cos(lat1*Math.PI/180) *
+    Math.cos(lat2*Math.PI/180) *
+    Math.sin(dLon/2)**2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
 }
 
-/* ============================
+/* =========================
    CONFIG
-============================ */
+========================= */
 const TORONTO = { lat: 43.6532, lng: -79.3832 };
-const COLLINGWOOD = { lat: 44.5008, lng: -80.2144 };
 
 const MATERIAL_ICONS_RAW = {
-  "Top Priority (Tier) A (Receives All Materials)": "https://maps.google.com/mapfiles/ms/icons/green-dot.png",
-  "High Priority (Tier) A (Receives All Materials)": "https://maps.google.com/mapfiles/ms/icons/blue-dot.png",
-  "Medium Priority (Tier) A (Receives All Materials)": "https://maps.google.com/mapfiles/ms/icons/purple-dot.png",
-  "Low Priority (Tier) A (Receives All Materials)": "https://maps.google.com/mapfiles/ms/icons/pink-dot.png",
-  "Delivery Restricted S (Special Meetings Only)": "https://maps.google.com/mapfiles/ms/icons/orange-dot.png",
-  "Delivery Restricted D (Decline Materials)": "https://maps.google.com/mapfiles/ms/icons/yellow-dot.png"
+  "top priority": "https://maps.google.com/mapfiles/ms/icons/green-dot.png",
+  "high potential": "https://maps.google.com/mapfiles/ms/icons/blue-dot.png",
+  "medium potential": "https://maps.google.com/mapfiles/ms/icons/purple-dot.png",
+  "low potential": "https://maps.google.com/mapfiles/ms/icons/pink-dot.png",
+  "restricted": "https://maps.google.com/mapfiles/ms/icons/orange-dot.png",
+  "declined": "https://maps.google.com/mapfiles/ms/icons/yellow-dot.png"
 };
-
-const MATERIAL_ICONS = {};
-Object.keys(MATERIAL_ICONS_RAW).forEach(k => {
-  MATERIAL_ICONS[normalize(k)] = MATERIAL_ICONS_RAW[k];
-});
 
 let map;
 let markers = [];
 let allInvestors = [];
 
-/* ============================
-   MAPA E LÓGICA
-============================ */
+/* =========================
+   MAP
+========================= */
 async function initMap() {
-  console.log("Inicializando mapa...");
-  
   map = new google.maps.Map(document.getElementById("map"), {
-    zoom: 8.2, 
-    center: TORONTO, 
-    mapTypeId: "roadmap",
+    zoom: 8.2,
+    center: TORONTO,
     mapTypeControl: false,
     streetViewControl: false
   });
 
-  // Marcadores fixos
-  new google.maps.Marker({ position: TORONTO, map, title: "Toronto City Hall", icon: { url: "https://maps.google.com/mapfiles/kml/shapes/capital_small.png", scaledSize: new google.maps.Size(36, 36) } });
-  new google.maps.Circle({ map, center: TORONTO, radius: 40000, strokeColor: "#000", strokeOpacity: 0.6, strokeWeight: 1, fillOpacity: 0 });
-  new google.maps.Marker({ position: COLLINGWOOD, map, title: "Collingwood", icon: { url: "https://maps.google.com/mapfiles/kml/shapes/capital_small.png", scaledSize: new google.maps.Size(32, 32) } });
-
   setupLegend();
 
-  try {
-      // IMPORTANTE: O arquivo JSON deve estar na mesma pasta que este arquivo HTML
-      const res = await fetch("investors_nobo_minimal.json");
-      allInvestors = await res.json();
-      console.log("Dados carregados:", allInvestors.length);
-      renderMarkers();
-  } catch (err) {
-      console.error("Erro ao carregar JSON:", err);
-      document.getElementById("counter").innerText = "Error loading data";
-  }
+  const res = await fetch("investors_nobo_minimal.json");
+  allInvestors = await res.json();
+  renderMarkers();
 }
 
 function renderMarkers() {
-  // Limpa marcadores antigos
   markers.forEach(m => m.setMap(null));
   markers = [];
 
-  // 1. Pega Clusters Marcados
-  const checkedClusters = Array.from(document.querySelectorAll("input[name='cluster']:checked")).map(cb => cb.value);
-  
-  // 2. Pega Distâncias Marcadas
-  const checkedDistances = Array.from(document.querySelectorAll("input[name='dist']:checked")).map(cb => cb.value);
+  const clusters = [...document.querySelectorAll("input[name='cluster']:checked")].map(c => c.value);
+  const dists = [...document.querySelectorAll("input[name='dist']:checked")].map(d => d.value);
 
   let count = 0;
 
   allInvestors.forEach(inv => {
-    // Validar Lat/Lon
-    const lat = Number(String(inv.lat ?? "").replace(",", "."));
-    const lon = Number(String(inv.lon ?? "").replace(",", "."));
-    if (isNaN(lat) || isNaN(lon)) return;
+    const lat = Number(inv.lat), lon = Number(inv.lon);
+    if (!lat || !lon) return;
 
-    // Filtro Província (Ontario)
-    const province = String(inv.PROVINCE || inv.PROV || "").trim().toUpperCase();
-    if (!province.startsWith("ON")) return;
+    const raw = normalize(inv["Final Investor Cluster Materials"]);
+    if (!clusters.some(c => raw.includes(normalize(c)))) return;
 
-    const rawMaterial = inv["Final Investor Cluster Materials"] || inv["Final Investor Cluster – Materials"];
-    if (!rawMaterial) return;
+    const km = haversineDistance(TORONTO.lat, TORONTO.lng, lat, lon);
+    if (
+      (km <= 10 && !dists.includes("local")) ||
+      (km > 10 && km <= 40 && !dists.includes("nearby")) ||
+      (km > 40 && km <= 100 && !dists.includes("medium")) ||
+      (km > 100 && km <= 300 && !dists.includes("regional")) ||
+      (km > 300 && !dists.includes("distant"))
+    ) return;
 
-    // --- FILTRO DE CLUSTER ---
-    if (checkedClusters.length === 0) return;
+    const iconKey = Object.keys(MATERIAL_ICONS_RAW).find(k => raw.includes(k));
+    if (!iconKey) return;
 
-    const matNorm = normalize(rawMaterial);
-    const clusterMatch = checkedClusters.some(filterValue => {
-        const filterClean = filterValue.replace(/\s/g, ""); 
-        return matNorm.includes(filterClean);
-    });
-    if (!clusterMatch) return;
-
-
-    // --- FILTRO DE DISTÂNCIA ---
-    if (checkedDistances.length === 0) return;
-
-    const distKm = haversineDistance(TORONTO.lat, TORONTO.lng, lat, lon);
-    let distanceMatch = false;
-
-    if (checkedDistances.includes("local") && distKm <= 10) distanceMatch = true;
-    if (checkedDistances.includes("nearby") && distKm > 10 && distKm <= 40) distanceMatch = true;
-    if (checkedDistances.includes("medium") && distKm > 40 && distKm <= 100) distanceMatch = true;
-    if (checkedDistances.includes("regional") && distKm > 100 && distKm <= 300) distanceMatch = true;
-    if (checkedDistances.includes("distant") && distKm > 300) distanceMatch = true;
-
-    if (!distanceMatch) return;
-
-    // --- PLOTAR ---
-    const iconUrl = MATERIAL_ICONS[normalize(rawMaterial)];
-    if (!iconUrl) return;
-
-    const marker = new google.maps.Marker({
+    markers.push(new google.maps.Marker({
       map,
       position: { lat, lng: lon },
-      icon: { url: iconUrl, scaledSize: new google.maps.Size(18, 18) },
-      title: `${inv["INVESTOR (CONSOLIDATED)"] || "Investor"}\n${rawMaterial}`
-    });
-
-    markers.push(marker);
+      icon: MATERIAL_ICONS_RAW[iconKey]
+    }));
     count++;
   });
 
@@ -333,30 +263,19 @@ function renderMarkers() {
 }
 
 function setupLegend() {
-  const legendDiv = document.getElementById("legend");
-  legendDiv.style.display = "block"; // Torna visível
-  legendDiv.innerHTML = `
-    <b>Materials Cluster</b><br>
-    <img src="https://maps.google.com/mapfiles/ms/icons/green-dot.png"> Top Priority<br>
-    <img src="https://maps.google.com/mapfiles/ms/icons/blue-dot.png"> High Priority<br>
-    <img src="https://maps.google.com/mapfiles/ms/icons/purple-dot.png"> Medium Priority<br>
-    <img src="https://maps.google.com/mapfiles/ms/icons/pink-dot.png"> Low Priority<br>
-    <img src="https://maps.google.com/mapfiles/ms/icons/orange-dot.png"> Delivery Restricted S<br>
-    <img src="https://maps.google.com/mapfiles/ms/icons/yellow-dot.png"> Delivery Restricted D<br>
+  document.getElementById("legend").innerHTML = `
+    <b>Material Delivery Status</b><br>
+    <img src="${MATERIAL_ICONS_RAW["top priority"]}"> Top Priority – Authorized (A)<br>
+    <img src="${MATERIAL_ICONS_RAW["high potential"]}"> High Potential – Authorized (A)<br>
+    <img src="${MATERIAL_ICONS_RAW["medium potential"]}"> Medium Potential – Authorized (A)<br>
+    <img src="${MATERIAL_ICONS_RAW["low potential"]}"> Low Potential – Authorized (A)<br>
+    <img src="${MATERIAL_ICONS_RAW["restricted"]}"> Restricted – Selective (S)<br>
+    <img src="${MATERIAL_ICONS_RAW["declined"]}"> Declined – No Materials (D)
   `;
 }
 
-// Adiciona evento a TODOS os checkboxes
-document.addEventListener("DOMContentLoaded", () => {
-    const checkboxes = document.querySelectorAll("input[type='checkbox']");
-    checkboxes.forEach(cb => {
-        cb.addEventListener("change", renderMarkers);
-    });
-});
-
-// Expõe initMap para a API do Google
+document.addEventListener("change", renderMarkers);
 window.initMap = initMap;
-
 </script>
 
 <script async
